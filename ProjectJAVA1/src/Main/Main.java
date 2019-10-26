@@ -1,3 +1,4 @@
+package Main;
 import java.io.File;
 
 import javax.sound.sampled.AudioInputStream;
@@ -32,10 +33,10 @@ public class Main extends JFrame {
 		setDefaultCloseOperation(EXIT_ON_CLOSE); 	// 종료버튼 누르면 프로세스 종료
 		setVisible(true);
 		
-		PlayMusic("sounds/music1.wav");
+		playMusic("sounds/music1.wav");
 	}
 	
-	public void PlayMusic(String fileName)		//음악재생 메소드
+	public void playMusic(String fileName)		//음악재생 메소드
     {
         try
         {
