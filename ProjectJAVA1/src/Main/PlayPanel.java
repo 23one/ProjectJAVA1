@@ -1,5 +1,7 @@
 package Main;
 import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,27 +25,26 @@ public class PlayPanel extends JPanel{
 	ArrayList<Mage> friendList = new ArrayList<Mage>();			// 생성된 아군(Mage)이 담겨있는 리스트
 	ArrayList<Mage> enemyList = new ArrayList<Mage>();			// 생성된 적군이 담겨있는 리스트
 	ArrayList<Castle> castleList = new ArrayList<Castle>();		// 아군과 적군의 성이 담겨있는 리스트, 0=아군 1=적군
+	ControlPanel controlPanel;		// 컨트롤패널 선언
 	
 	public PlayPanel() {
 		setLayout(null);
 		
-		ControlPanel cp = new ControlPanel();
+		controlPanel = new ControlPanel();
 		
-		add(cp);
+		add(controlPanel);
 		
 		//test
 		castleList.add(new Castle());
-		friendList.add(new Mage());
-		
+		castleList.add(new Castle(true));
 		add(castleList.get(0));
-		add(friendList.get(0));
-		
-		cp.moneyLabel.setText((Integer.toString(castleList.get(0).getMoney())));
-		cp.hpLabel.setText((Integer.toString(castleList.get(0).getHp())));
+		add(castleList.get(1));
 		
 		Thread t1 = new Thread(new Check());
 		t1.start();
 		//test
+		
+		repaint();
 	}
 	
 	// 상단의 캐릭터 생성과 현재 정보를 보기위한 패널
@@ -59,12 +60,30 @@ public class PlayPanel extends JPanel{
 			setLayout(new GridLayout(1,10,5,5));
 			setBounds(0, 0, Main.SCREEN_WIDTH, 70);
 			
-			button1 = new JButton();
-			button2 = new JButton();
-			button3 = new JButton();
-			button4 = new JButton();
+			button1 = new JButton("Mage1");
+			button2 = new JButton("Mage2");
+			button3 = new JButton("Mage3");
+			button4 = new JButton("Mage4");
 			moneyLabel = new JLabel();
 			hpLabel = new JLabel();
+			
+			// 버튼 꾸미기
+			button1.setBackground(Color.red);
+			button1.setFont(new Font("맑은고딕",Font.BOLD,30));
+			button1.setCursor(new Cursor(Cursor.HAND_CURSOR));
+			button1.setForeground(Color.white);
+			button2.setFont(new Font("맑은고딕",Font.BOLD,30));
+			button2.setBackground(Color.YELLOW);
+			button2.setForeground(Color.white);
+			button2.setCursor(new Cursor(Cursor.HAND_CURSOR));
+			button3.setForeground(Color.white);
+			button3.setFont(new Font("맑은고딕",Font.BOLD,30));
+			button3.setBackground(Color.green);
+			button3.setCursor(new Cursor(Cursor.HAND_CURSOR));
+			button4.setForeground(Color.white);
+			button4.setFont(new Font("맑은고딕",Font.BOLD,30));
+			button4.setBackground(Color.blue);
+			button4.setCursor(new Cursor(Cursor.HAND_CURSOR));
 			
 			moneyLabel.setHorizontalAlignment(JLabel.CENTER);
 			hpLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -87,11 +106,15 @@ public class PlayPanel extends JPanel{
 		public void actionPerformed(ActionEvent e) {
 			if (e.getSource() == button1) {
 				//test
-				friendList.add(new Mage());
-				Mage tmp = friendList.get(friendList.size()-1);
-				PlayPanel.this.add(tmp);
-				PlayPanel.this.repaint();
-				System.out.println(friendList.size());
+				if (castleList.get(0).getMoney() >= 10)
+				{
+					castleList.get(0).setMoney(castleList.get(0).getMoney() - 10);
+					friendList.add(new Mage());
+					Mage tmp = friendList.get(friendList.size()-1);
+					PlayPanel.this.add(tmp);
+					PlayPanel.this.repaint();
+					System.out.println(friendList.size());
+				}
 				//test
 				
 			}
@@ -118,10 +141,11 @@ public class PlayPanel extends JPanel{
 		public void run() {
 			while (true) {
 				for (int i=0; i<friendList.size(); i++) {
-					friendList.get(i).move();
-					friendList.get(i).attack(enemyList);
+					friendList.get(i).fight(enemyList, castleList.get(1));
 					repaint();
 				}
+				controlPanel.moneyLabel.setText((Integer.toString(castleList.get(0).getMoney())));
+				controlPanel.hpLabel.setText((Integer.toString(castleList.get(0).getHp())));
 				try {
 					Thread.sleep(30);
 				} catch(InterruptedException e) {
