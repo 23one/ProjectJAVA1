@@ -22,7 +22,7 @@ public class PlayPanel extends JPanel{
 	JLabel label;
 	ArrayList<Mage> friendList = new ArrayList<Mage>();			// 생성된 아군(Mage)이 담겨있는 리스트
 	ArrayList<Mage> enemyList = new ArrayList<Mage>();			// 생성된 적군이 담겨있는 리스트
-	ArrayList<Castle> castleList = new ArrayList<Castle>();		// 아군과 적군의 성이 담겨있는 리스트
+	ArrayList<Castle> castleList = new ArrayList<Castle>();		// 아군과 적군의 성이 담겨있는 리스트, 0=아군 1=적군
 	
 	public PlayPanel() {
 		setLayout(null);
@@ -40,6 +40,9 @@ public class PlayPanel extends JPanel{
 		
 		cp.moneyLabel.setText((Integer.toString(castleList.get(0).getMoney())));
 		cp.hpLabel.setText((Integer.toString(castleList.get(0).getHp())));
+		
+		Thread t1 = new Thread(new Check());
+		t1.start();
 		//test
 	}
 	
@@ -86,7 +89,6 @@ public class PlayPanel extends JPanel{
 				//test
 				friendList.add(new Mage());
 				Mage tmp = friendList.get(friendList.size()-1);
-				tmp.setX(tmp.getX()+50*(friendList.size()-1));
 				PlayPanel.this.add(tmp);
 				PlayPanel.this.repaint();
 				System.out.println(friendList.size());
@@ -96,7 +98,7 @@ public class PlayPanel extends JPanel{
 			else if (e.getSource() == button2) {
 				if (friendList.size() != 0) {
 					//test
-					PlayPanel.this.remove(friendList.remove(friendList.size()-1));
+					PlayPanel.this.remove(friendList.remove(0));
 					PlayPanel.this.repaint();
 					System.out.println(friendList.size());
 					//test
@@ -108,6 +110,23 @@ public class PlayPanel extends JPanel{
 			}
 			else if (e.getSource() == button4) {
 				
+			}
+		}
+	}
+	
+	public class Check implements Runnable {
+		public void run() {
+			while (true) {
+				for (int i=0; i<friendList.size(); i++) {
+					friendList.get(i).move();
+					friendList.get(i).attack(enemyList);
+					repaint();
+				}
+				try {
+					Thread.sleep(30);
+				} catch(InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
